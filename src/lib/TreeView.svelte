@@ -9,9 +9,9 @@
   //	import { slide } from 'svelte/transition'
   import { type TreeViewData } from "./TreeViewTypes";
   export let tree: TreeViewData;
-  const { content, children, component } = tree;
+  const { content, children, component, initiallyExpanded, hr } = tree;
 
-  let expanded = _expansionState[content] || false;
+  let expanded = _expansionState[content] || initiallyExpanded || false;
   const toggleExpansion = () => {
     expanded = _expansionState[content] = !expanded;
   };
@@ -22,10 +22,18 @@
   <!-- transition:slide -->
   <li>
     {#if children}
-      <span on:click={toggleExpansion}>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <div on:click={toggleExpansion}>
+        {#if hr}
+          <hr />
+        {/if}
         <span class="arrow" class:arrowDown>&#x25b6</span>
-        {content}
-      </span>
+        {#if component}
+          <svelte:component this={component} {...content} />
+        {:else}
+          {content}
+        {/if}
+      </div>
       {#if expanded}
         {#each children as child}
           <svelte:self tree={child} />
@@ -35,7 +43,7 @@
       <span>
         <span class="no-arrow" />
         {#if component}
-          <svelte:component this={component} {...content}/>
+          <svelte:component this={component} {...content} />
         {:else}
           {content}
         {/if}

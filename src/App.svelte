@@ -6,24 +6,41 @@
   import Browser from "./lib/Browser.svelte";
 
   import {
-    databaseToTimeline,
-    type DatabaseRepresentation,
+    sessionsToTimeline,
+    type SessionsDumpDatabaseRepresentation,
     type TimelineRepresentation,
+    type SessionTitlesDumpDatabaseRepresentation,
+    sessionTitlesToTimeline,
+    type SessionTitle,
   } from "./data/data";
-  let dbContents: DatabaseRepresentation[];
+  import { SQLStrings } from "./lib/SQLStrings";
+  import type { Dictionary } from "lodash";
+  let db: Database;
+  let dbSessions: SessionsDumpDatabaseRepresentation[];
+  let dbSessionTitles: SessionTitlesDumpDatabaseRepresentation[];
   let timelineDbRepresentation: TimelineRepresentation = null;
+  let sessionTitlesRepresentation: Dictionary<SessionTitle[]>;
   let last24hours = true;
   async function initializeTimetrackingDb(dbBuffer: ArrayBuffer) {
     const sql = await initSqlJs({
       locateFile: () => sqliteUrl,
     });
 
-    const db = new sql.Database(new Uint8Array(dbBuffer));
-    let allSQLString = "SELECT * FROM 'Sessions'";
-    let last24hoursSQLString = "SELECT * FROM 'Sessions' WHERE Start >= datetime('now','-1 day')"
+    db = new sql.Database(new Uint8Array(dbBuffer));
 
-    dbContents = db.exec(last24hours ? last24hoursSQLString: allSQLString);
-    timelineDbRepresentation = databaseToTimeline(dbContents);
+    dbSessions = db.exec(
+      last24hours
+        ? SQLStrings.last24hoursSessionsSQLString
+        : SQLStrings.allSessionsSQLString
+    );
+    dbSessionTitles = db.exec(
+      last24hours
+        ? SQLStrings.last24hoursTitlesBySessionIdSQLString
+        : SQLStrings.allTitlesBySessionIdSQLString
+    );
+    timelineDbRepresentation = sessionsToTimeline(dbSessions);
+    sessionTitlesRepresentation = sessionTitlesToTimeline(dbSessionTitles);
+    console.log(sessionTitlesRepresentation);
   }
 
   function readDbAsByteArray(e: Event & { currentTarget: HTMLInputElement }) {
@@ -43,7 +60,7 @@
 <main>
   <input type="file" on:change={readDbAsByteArray} />
   <input type="checkbox" bind:checked={last24hours} /> Only last 24 hours
-  {#await dbContents}
+  {#await dbSessions}
     ...loading
   {:then results}
     <!-- {JSON.stringify(results)} -->
@@ -53,7 +70,10 @@
 
   {#if timelineDbRepresentation != null}
     <Timeline data={timelineDbRepresentation} />
-    <Browser timelineRep={timelineDbRepresentation} />
+    <Browser
+      timelineRep={timelineDbRepresentation}
+      sessionTitles={sessionTitlesRepresentation}
+    />
   {/if}
 </main>
 
