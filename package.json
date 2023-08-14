@@ -1,0 +1,30 @@
+{
+  "name": "time-tracking-interface",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.0.3",
+    "@tsconfig/svelte": "^4.0.1",
+    "@types/lodash": "^4.14.194",
+    "@types/sql.js": "^1.4.4",
+    "svelte": "^3.57.0",
+    "svelte-check": "^2.10.3",
+    "tslib": "^2.5.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
+  },
+  "dependencies": {
+    "@types/d3": "^7.4.0",
+    "d3": "^7.8.4",
+    "lodash": "^4.17.21",
+    "sql.js": "^1.8.0",
+    "timelines-chart": "^2.12.1"
+  }
+}
