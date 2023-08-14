@@ -18,14 +18,14 @@ export interface SessionTitlesDumpDatabaseRepresentation {
 export interface Session {
     id: SessionId
     timeRange: [Date, Date]
-    processName: string
+    val: string
 }
 
 export interface SessionTitle {
     id: TitleId,
     sessionId: SessionId
     timeRange: [Date, Date],
-    title: string
+    val: string
 }
 
 export interface SessionProcessGroup {
@@ -53,10 +53,10 @@ export function sessionsToTimeline(dbRepresentation: SessionsDumpDatabaseReprese
     const timelineSessions: Session[] = dbRepresentation[0].values.map(dbSession => ({
         id: dbSession[0],
         timeRange: [new Date(dbSession[3]), new Date(dbSession[4])],
-        processName: dbSession[1]
+        val: dbSession[1]
     }))
 
-    const timelineDict = groupBy(timelineSessions, (s) => s.processName);
+    const timelineDict = groupBy(timelineSessions, (s) => s.val);
     const processGroups: SessionProcessGroup[] = Object.entries(timelineDict).map(v => ({ label: v[0], data: v[1] }));
     return [{ group: "", data: processGroups }];
 }
@@ -66,7 +66,7 @@ export function sessionTitlesToTimeline(dbRepresentation: SessionTitlesDumpDatab
 
     const timelineTitles: SessionTitle[] = dbRepresentation[0].values.map(dbTitle => ({
         id: dbTitle[0],
-        title: dbTitle[1],
+        val: dbTitle[1],
         timeRange: [new Date(dbTitle[3]), new Date(dbTitle[4])],
         sessionId: dbTitle[2]
     }))

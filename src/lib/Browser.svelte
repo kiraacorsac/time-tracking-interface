@@ -59,7 +59,7 @@
                   {
                     content: "Detail Stats",
                     children: Object.entries(
-                      groupBy(sessionTitles[session.id], (t) => t.title)
+                      groupBy(sessionTitles[session.id], (t) => t.val)
                     )
                       .sort((gt1, gt2) => gt1[0].localeCompare(gt2[0]))
                       .map((gt) => ({

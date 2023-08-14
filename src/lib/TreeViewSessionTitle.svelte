@@ -11,5 +11,5 @@
     title.timeRange[1]
   )}
 </div>
-<div>{title.title}</div>
+<div>{title.val}</div>
 --
